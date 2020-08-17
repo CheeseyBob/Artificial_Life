@@ -1,4 +1,7 @@
 import java.awt.Color;
+import java.awt.image.BufferedImage;
+import java.io.PrintWriter;
+import java.util.Scanner;
 
 class Food extends WorldObject {
 	static int defaultFoodEnergy;
@@ -7,6 +10,13 @@ class Food extends WorldObject {
 	
 	int energy;
 	boolean isFlesh;
+	
+	public static Food load(Scanner scanner) {
+		String[] data = scanner.next().split(":");
+		int energy = Integer.parseInt(data[0]);
+		boolean isFlesh = Boolean.parseBoolean(data[1]);
+		return new Food(energy, isFlesh);
+	}
 	
 	Food(int energy, boolean isFlesh){
 		this.energy = energy;
@@ -25,6 +35,11 @@ class Food extends WorldObject {
 	@Override
 	public String getDisplayName() {
 		return "Food";
+	}
+	
+	@Override
+	public BufferedImage getImage() {
+		return Tileset.foodImage;
 	}
 
 	@Override
@@ -54,5 +69,11 @@ class Food extends WorldObject {
 		default:
 			return false;
 		}
+	}
+	
+	@Override
+	public void save(PrintWriter pw) {
+		pw.println("Food");
+		pw.println(energy+":"+isFlesh);
 	}
 }

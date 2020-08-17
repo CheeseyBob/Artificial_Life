@@ -1,5 +1,8 @@
 import java.awt.Color;
 import java.awt.Point;
+import java.awt.image.BufferedImage;
+import java.io.PrintWriter;
+import java.util.Scanner;
 
 class Door extends WorldObject {
 	static Color color = new Color(51, 51, 51);
@@ -13,6 +16,10 @@ class Door extends WorldObject {
 				}
 			}
 		}
+	}
+	
+	public static Door load(Scanner scanner) {
+		return new Door();
 	}
 	
 	public static void openAll() {
@@ -45,6 +52,11 @@ class Door extends WorldObject {
 	public String getDisplayName() {
 		return "Door";
 	}
+	
+	@Override
+	public BufferedImage getImage() {
+		return Tileset.wallImage;
+	}
 
 	@Override
 	public String getInfo() {
@@ -66,5 +78,10 @@ class Door extends WorldObject {
 				object.remove();
 			}
 		}
+	}
+	
+	@Override
+	public void save(PrintWriter pw) {
+		pw.println("Door");
 	}
 }

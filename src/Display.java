@@ -113,8 +113,12 @@ class Display extends Frame {
 						
 						// TODO - replace this with more general object drawing code. //
 						
-						g.setColor(highlight(object) ? highlightColor() : object.getColor());
-						g.fillRect(tileSize*x, tileSize*y, tileSize, tileSize);
+						
+//						g.setColor(highlight(object) ? highlightColor() : object.getColor());
+//						g.fillRect(tileSize*x, tileSize*y, tileSize, tileSize);
+						
+						
+						g.drawImage(object.getImage(), null, tileSize*x, tileSize*y);
 					}
 				}
 			}

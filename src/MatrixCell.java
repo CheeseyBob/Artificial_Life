@@ -1,8 +1,10 @@
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Point;
+import java.awt.image.BufferedImage;
 import java.io.PrintWriter;
 import java.util.LinkedList;
+import java.util.Scanner;
 
 import files.TextFileHandler;
 
@@ -57,6 +59,15 @@ class MatrixCell extends Cell {
 		child.generation = Math.max(parent1.generation, parent2.generation) + 1;
 		child.mutate();
 		return child;
+	}
+	
+	public static MatrixCell load(Scanner scanner) {
+		
+		
+		// TODO ///////////////////////////////
+		
+		
+		return new MatrixCell();
 	}
 	
 	MatrixCell(){
@@ -315,6 +326,11 @@ class MatrixCell extends Cell {
 	public String getDisplayName() {
 		return toString();
 	}
+	
+	@Override
+	public BufferedImage getImage() {
+		return Tileset.cellImage;
+	}
 
 	@Override
 	public String getInfo() {
@@ -558,6 +574,20 @@ class MatrixCell extends Cell {
 		
 		// Done //
 		pw.close();
+	}
+	
+	@Override
+	public void save(PrintWriter pw) {
+		pw.println("MatrixCell");
+		pw.println("#"+Integer.toHexString(hashCode()));
+		
+		
+		
+		
+		// TODO - print a separate file for the cell data. //
+		
+		
+		
 	}
 	
 	private void setMate(MatrixCell cell) {

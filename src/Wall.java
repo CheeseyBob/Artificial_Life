@@ -1,19 +1,13 @@
 import java.awt.Color;
+import java.awt.image.BufferedImage;
+import java.io.PrintWriter;
+import java.util.Scanner;
 
 class Wall extends WorldObject {
+	private static Color color = Color.BLACK;
 	
-	Color color;
-	boolean isDisplaceable;
-	boolean isMovable;
-	
-	Wall(){
-		color = Color.BLACK;
-	}
-	
-	Wall(boolean isDisplacable, boolean isMovable, Color color){
-		this.isDisplaceable = isDisplacable;
-		this.isMovable = isMovable;
-		this.color = color;
+	public static Wall load(Scanner scanner) {
+		return new Wall();
 	}
 
 	@Override
@@ -25,36 +19,27 @@ class Wall extends WorldObject {
 	public String getDisplayName() {
 		return "Wall";
 	}
+	
+	@Override
+	public BufferedImage getImage() {
+		return Tileset.wallImage;
+	}
 
 	@Override
 	public String getInfo() {
-		String info = "";
-		return info;
+		return "";
 	}
 
 	@Override
 	public boolean interact(WorldObject interacter, Interaction interactionType, Object[] data) {
 		switch (interactionType) {
-		case PUSH:
-			if(isMovable){
-				return push(interacter, this);
-			} else {
-				return false;
-			}
-		case PULL:
-			if(isMovable){
-				return pull(interacter, this);
-			} else {
-				return false;
-			}
-		case DISPLACE:
-			if(isDisplaceable){
-				return displace(interacter, this);
-			} else {
-				return false;
-			}
 		default:
 			return false;
 		}
+	}
+	
+	@Override
+	public void save(PrintWriter pw) {
+		pw.println("Wall");
 	}
 }

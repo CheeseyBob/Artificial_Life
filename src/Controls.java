@@ -1,4 +1,3 @@
-import java.awt.Color;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.LinkedList;
@@ -53,7 +52,7 @@ class Controls implements KeyListener {
 		Control.PLACEMODE_PLACE_HAZARD.setTrigger(KeyEvent.VK_H);
 		Control.PLACEMODE_PLACE_WALL.setTrigger(KeyEvent.VK_W);
 		Control.PLACEMODE_REMOVE_OBJECT.setTrigger(KeyEvent.VK_R);
-		Control.PRINT_LOG.setTrigger(KeyEvent.VK_P, false, true);
+		Control.SAVE_FILE.setTrigger(KeyEvent.VK_S, false, true);
 		Control.SIM_SPEED_1.setTrigger(KeyEvent.VK_1);
 		Control.SIM_SPEED_2.setTrigger(KeyEvent.VK_2);
 		Control.SIM_SPEED_3.setTrigger(KeyEvent.VK_3);
@@ -105,7 +104,7 @@ class Controls implements KeyListener {
 				ArtificialLife.selectHoveredObject();
 				break;
 			case LOAD_FILE:
-				ArtificialLife.loadFile();
+				ArtificialLife.loadSavedMap();
 				control.consume();
 				break;
 			case PAUSE:
@@ -124,7 +123,7 @@ class Controls implements KeyListener {
 				break;
 			case PLACEMODE_PLACE_WALL:
 				if(inPlaceMode)
-					ArtificialLife.place(new Wall(false, false, Color.BLACK), Display.viewX, Display.viewY);
+					ArtificialLife.place(new Wall(), Display.viewX, Display.viewY);
 				control.consume();
 				break;
 			case PLACEMODE_REMOVE_OBJECT:
@@ -132,8 +131,8 @@ class Controls implements KeyListener {
 					ArtificialLife.removeObjectAtCursor();
 				control.consume();
 				break;
-			case PRINT_LOG:
-				ArtificialLife.printGenerationToFile();
+			case SAVE_FILE:
+				ArtificialLife.saveMap();
 				control.consume();
 				break;
 			case SIM_SPEED_1:
@@ -262,7 +261,7 @@ enum Control {
 	DOORS_CLOSE, DOORS_CLOSE_FORCIBLY, DOORS_OPEN,
 	DRAW_CELL_VISION, FOLLOW_CELL, LOAD_FILE, PAUSE,
 	PLACEMODE_PLACE_FOOD, PLACEMODE_PLACE_HAZARD, PLACEMODE_PLACE_WALL, PLACEMODE_REMOVE_OBJECT,
-	PRINT_LOG,
+	SAVE_FILE,
 	SIM_SPEED_1, SIM_SPEED_2, SIM_SPEED_3, SIM_SPEED_4, SIM_SPEED_5, SIM_SPEED_6, SIM_SPEED_7, SIM_SPEED_8, SIM_SPEED_9,
 	STEP_ONCE, 
 	TOGGLE_MAP_MODE, TOGGLE_PLACE_MODE, TOGGLE_CELL_SPAWNING, 

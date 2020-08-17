@@ -1,7 +1,14 @@
 import java.awt.Color;
+import java.awt.image.BufferedImage;
+import java.io.PrintWriter;
+import java.util.Scanner;
 
 class Hazard extends WorldObject {
 	static Color color = Color.RED;
+	
+	public static Hazard load(Scanner scanner) {
+		return new Hazard();
+	}
 	
 	@Override
 	public Color getColor() {
@@ -11,6 +18,11 @@ class Hazard extends WorldObject {
 	@Override
 	public String getDisplayName() {
 		return "Hazard";
+	}
+	
+	@Override
+	public BufferedImage getImage() {
+		return Tileset.hazardImage;
 	}
 
 	@Override
@@ -35,5 +47,10 @@ class Hazard extends WorldObject {
 		default:
 			return false;
 		}
+	}
+	
+	@Override
+	public void save(PrintWriter pw) {
+		pw.println("Hazard");
 	}
 }

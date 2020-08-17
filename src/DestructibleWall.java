@@ -1,9 +1,18 @@
 import java.awt.Color;
+import java.awt.image.BufferedImage;
+import java.io.PrintWriter;
+import java.util.Scanner;
 
 class DestructibleWall extends WorldObject implements Stepable {
 	static Color color = new Color(153, 153, 153);
 	
 	int hp;
+	
+	public static DestructibleWall load(Scanner scanner) {
+		String data = scanner.next();
+		int hp = Integer.parseInt(data);
+		return new DestructibleWall(hp);
+	}
 	
 	public DestructibleWall(int hp) {
 		this.hp = hp;
@@ -17,6 +26,11 @@ class DestructibleWall extends WorldObject implements Stepable {
 	@Override
 	public String getDisplayName() {
 		return "Destructible Wall";
+	}
+	
+	@Override
+	public BufferedImage getImage() {
+		return Tileset.wallImage;
 	}
 
 	@Override
@@ -49,6 +63,12 @@ class DestructibleWall extends WorldObject implements Stepable {
 
 	@Override
 	public void step() {
-		hit(10);
+		hit(10);//XXX/////////////////////////////////
+	}
+	
+	@Override
+	public void save(PrintWriter pw) {
+		pw.println("DestructibleWall");
+		pw.println(hp);
 	}
 }

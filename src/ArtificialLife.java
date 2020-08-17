@@ -2,8 +2,10 @@ import java.awt.Color;
 import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.PrintWriter;
 import java.util.Date;
 import java.util.LinkedList;
+import java.util.Scanner;
 
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
@@ -163,6 +165,7 @@ class ArtificialLife implements Runnable {
 		return turnList.getStepList();
 	}
 	
+	@Deprecated
 	public static void loadFile() {
 		int choice = JOptionPane.showOptionDialog(null, "Load one cell or whole population?", "load", JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null, new String[]{"one cell", "population"}, null); 
 		
@@ -197,6 +200,7 @@ class ArtificialLife implements Runnable {
 		}
 	}
 	
+	@Deprecated
 	public static void loadCellFromFile(File file){
 		if(file != null){
 			// Load and place the cell. //
@@ -290,8 +294,6 @@ class ArtificialLife implements Runnable {
 					place(new Plant_Fruit(), x, y);
 				} else if(rgb == Plant_Tuber.color.getRGB()){
 					place(new Plant_Tuber(), x, y);
-				} else if(rgb == Color.MAGENTA.getRGB()){
-					place(new Creator(), x, y);
 				} else if(rgb == Door.color.getRGB()){
 					place(new Door(), x, y);
 				}
@@ -299,9 +301,45 @@ class ArtificialLife implements Runnable {
 		}
 	}
 	
+	public static void loadSavedMap() {
+		// Choose a save folder to load. //
+		JFileChooser fileChooser = new JFileChooser();
+		fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+		fileChooser.setCurrentDirectory(new File("logs"));
+		fileChooser.showOpenDialog(null);
+		File folder = fileChooser.getSelectedFile();
+		String path = folder.getPath();
+		String mapFileName = path+File.separator+"map.dat";
+		
+		// Load the chosen save. //
+		Scanner scanner = TextFileHandler.startReadingFromFile(mapFileName);
+		width = Integer.parseInt(scanner.next().split(":")[1]);
+		height = Integer.parseInt(scanner.next().split(":")[1]);
+		grid = new WorldObject[width][height];
+		turnList.clear();
+		while(scanner.hasNext()) {
+			String line = scanner.next();
+			if(line.startsWith("@")) {
+				String[] data = line.substring(1).split("#"); // data[0]=coords, data[1]=nextStep
+				String[] coords = data[0].split(",");
+				int x = Integer.parseInt(coords[0]);
+				int y = Integer.parseInt(coords[1]);
+				WorldObject object = WorldObject.load(scanner);
+				object.setLocation(x, y);
+				if(object instanceof Stepable) {
+					int stepsFromNow = Integer.parseInt(data[1]);
+					turnList.add((Stepable)object, stepsFromNow);
+				}
+			}
+		}
+		scanner.close();
+		System.out.println("LOADED MAP");
+	}
+	
 	public static void main(String[] args) {	
 		ArtificialLife.setup();
 		Controls.setup();
+		Tileset.load();//XXX//
 		
 		// Auto-testing //
 		if(isAutotesting) {
@@ -336,45 +374,6 @@ class ArtificialLife implements Runnable {
 		return place(object, new Point(x, y));
 	}
 	
-	public static void printGenerationToFile(){
-		System.out.println("PRINTING LOG");
-		Date date = new Date();
-		String filename = "logs/log_"+date.getTime();
-
-		int mostFoodEaten = 0;
-		int bestCell_foodEaten = 0;
-		int mostChildren = 0;
-		int bestCell_children = 0;
-		int longestLife = 0;
-		int bestCell_oldest = 0;
-		int i = 0;
-		for(Stepable stepable : getStepList()){
-			if(stepable instanceof MatrixCell){
-				MatrixCell cell = (MatrixCell)stepable;
-				cell.printToFile(filename+"/cell"+i+".txt");
-				if(cell.lifetimeFoodEaten > mostFoodEaten){
-					bestCell_foodEaten = i;
-					mostFoodEaten = cell.lifetimeFoodEaten;
-				}
-				if(cell.children > mostChildren){
-					bestCell_children = i;
-					mostChildren = cell.children;
-				}
-				if(cell.lifetime > longestLife){
-					bestCell_oldest = i;
-					longestLife = cell.lifetime;
-				}
-				i ++;
-			}
-		}
-		System.out.println("DONE PRINTING LOG");
-		System.out.println("BEST CELLS ARE:");
-		System.out.println("#"+bestCell_foodEaten+" WITH "+mostFoodEaten+" FOOD EATEN");
-		System.out.println("#"+bestCell_children+" WITH "+mostChildren+" CHILDREN");
-		System.out.println("#"+bestCell_oldest+" WITH "+longestLife+" STEP LIFETIME");
-		System.out.println();
-	}
-	
 	public static void remove(WorldObject object) {
 		if(object instanceof Stepable) {
 			turnList.remove((Stepable)object);
@@ -393,6 +392,32 @@ class ArtificialLife implements Runnable {
 		WorldObject object = getObjectAtCursor();
 		if(object != null)
 			object.remove();
+	}
+	
+	public static void saveMap() {
+		Date date = new Date();
+		String pathname = "logs/save-"+date.getTime()+File.separator;
+		String mapFileName = pathname+"map.dat";
+		PrintWriter pw = TextFileHandler.startWritingToFile(mapFileName, true);
+		pw.println("width:"+width);
+		pw.println("height:"+height);
+		WorldObject object = null;
+		for(int x = 0; x < width; x ++) {
+			for(int y = 0; y < height; y ++) {
+				object = grid[x][y];
+				if(object != null) {
+					String objectLocatorString = "@"+x+","+y;
+					if(object instanceof Stepable) {
+						int stepsToNextTurn = turnList.getStepsToNextTurn((Stepable)object);
+						objectLocatorString += "#"+stepsToNextTurn;
+					}
+					pw.println(objectLocatorString);
+					object.save(pw);
+				}
+			}
+		}
+		pw.close();
+		System.out.println("MAP SAVED TO "+mapFileName);
 	}
 	
 	public static void select(WorldObject selection) {

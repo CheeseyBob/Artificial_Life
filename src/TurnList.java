@@ -51,6 +51,15 @@ class TurnList {
 		return stepList;
 	}
 	
+	public int getStepsToNextTurn(Stepable stepable) {
+		for(Turn turn : turnList) {
+			if(turn.stepList.contains(stepable)) {
+				return turn.stepsFromNow;
+			}
+		}
+		return -1;
+	}
+	
 	public void remove(Stepable object) {
 		for(Turn turn : turnList) {
 			turn.stepList.remove(object);

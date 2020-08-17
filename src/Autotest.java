@@ -7,6 +7,7 @@ import files.TextFileHandler;
 
 class AutotestManager {
 	Autotest test;
+	Date date;
 	String logFileName;
 	int numberOfSimulations;
 	int simulationLength;
@@ -36,7 +37,8 @@ class AutotestManager {
 	
 	private AutotestManager(Autotest test) {
 		this.test = test;
-		this.logFileName = "logs/"+test.toString()+"-"+new Date().getTime()+".txt";
+		this.date = new Date();
+		this.logFileName = "logs/"+test.toString()+"-"+date.getTime()+".txt";
 	}
 	
 	public void setup() {
@@ -49,6 +51,7 @@ class AutotestManager {
 		
 		// Start printing log file. //
 		PrintWriter pw = startWritingLog();
+		pw.println(date);
 		pw.println(test.toString());
 		pw.println("Format: "+test.formatString());
 		pw.println("AUTO-RUNNING "+numberOfSimulations+" SIMULATIONS FOR "+simulationLength+" STEPS EACH");
