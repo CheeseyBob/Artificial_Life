@@ -6,7 +6,7 @@ import java.util.Scanner;
 class Hazard extends WorldObject {
 	static Color color = Color.RED;
 	
-	public static Hazard load(Scanner scanner) {
+	public static Hazard load(Scanner scanner, String pathname) {
 		return new Hazard();
 	}
 	
@@ -50,7 +50,7 @@ class Hazard extends WorldObject {
 	}
 	
 	@Override
-	public void save(PrintWriter pw) {
+	public void save(PrintWriter pw, String pathname) {
 		pw.println("Hazard");
 	}
 }

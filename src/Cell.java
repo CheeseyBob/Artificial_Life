@@ -37,7 +37,7 @@ abstract class Cell extends WorldObject implements Stepable {
 	int lifetimeFoodEaten = 0;
 	int lifetimeFoodEatenByPredation = 0;
 	
-	// Cell Data //
+	// Cell Variables //
 	int energy = energyUponBirth;
 	int lifetime = 0;
 	Direction facing = M.chooseRandom(Direction.values());
@@ -61,6 +61,9 @@ abstract class Cell extends WorldObject implements Stepable {
 	}
 	
 	protected static double[] loadVector(String dataString) {
+		if(dataString.equals("")) {
+			return new double[0];
+		}
 		String[] data = dataString.split(";");
 		double[] vector = new double[data.length];
 		for(int i = 0; i < vector.length; i ++) {

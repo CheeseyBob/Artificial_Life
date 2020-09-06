@@ -10,7 +10,7 @@ class Plant_Fruit extends WorldObject {
 	int lastPicked = 0;
 	int stepsToBearFruit = M.randInt(400, 800);
 	
-	public static Plant_Fruit load(Scanner scanner) {
+	public static Plant_Fruit load(Scanner scanner, String pathname) {
 		String[] data = scanner.next().split(":");
 		Plant_Fruit plant = new Plant_Fruit();
 		plant.lastPicked = Integer.parseInt(data[0]);
@@ -68,7 +68,7 @@ class Plant_Fruit extends WorldObject {
 	}
 	
 	@Override
-	public void save(PrintWriter pw) {
+	public void save(PrintWriter pw, String pathname) {
 		pw.println("Plant_Fruit");
 		pw.println(lastPicked+":"+stepsToBearFruit);
 	}

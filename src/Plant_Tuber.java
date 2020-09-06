@@ -8,7 +8,7 @@ class Plant_Tuber extends WorldObject implements Stepable {
 	
 	int stepsToBearFruit = M.randInt(50, 100);
 	
-	public static Plant_Tuber load(Scanner scanner) {
+	public static Plant_Tuber load(Scanner scanner, String pathname) {
 		String[] data = scanner.next().split(":");
 		Plant_Tuber plant = new Plant_Tuber();
 		plant.stepsToBearFruit = Integer.parseInt(data[0]);
@@ -57,7 +57,7 @@ class Plant_Tuber extends WorldObject implements Stepable {
 	}
 	
 	@Override
-	public void save(PrintWriter pw) {
+	public void save(PrintWriter pw, String pathname) {
 		pw.println("Plant_Tuber");
 		pw.println(stepsToBearFruit);
 	}

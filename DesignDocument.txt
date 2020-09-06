@@ -3,7 +3,7 @@ DESIGN DOCUMENT: Artificial Life
 
 ~~ TO-DO ~~
 
-> Finish the new loading code.
+> Re-assign mates after loading.
 > Abstract out the WorldObject.load() method better.
 > Save the window positions so you don't have to rearrange them every time you start the program.
 > Properly balance cell energy input/output.

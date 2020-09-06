@@ -11,7 +11,7 @@ class Food extends WorldObject {
 	int energy;
 	boolean isFlesh;
 	
-	public static Food load(Scanner scanner) {
+	public static Food load(Scanner scanner, String pathname) {
 		String[] data = scanner.next().split(":");
 		int energy = Integer.parseInt(data[0]);
 		boolean isFlesh = Boolean.parseBoolean(data[1]);
@@ -72,7 +72,7 @@ class Food extends WorldObject {
 	}
 	
 	@Override
-	public void save(PrintWriter pw) {
+	public void save(PrintWriter pw, String pathname) {
 		pw.println("Food");
 		pw.println(energy+":"+isFlesh);
 	}

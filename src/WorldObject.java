@@ -17,29 +17,29 @@ abstract class WorldObject {
 		return true;
 	}
 	
-	public static WorldObject load(Scanner scanner) {
+	public static WorldObject loadObject(Scanner scanner, String pathname) {
 		String objectClass = scanner.next();
 		WorldObject object = null;
 		if(objectClass.equals("DestructibleWall")) {
-			object = DestructibleWall.load(scanner);
+			object = DestructibleWall.load(scanner, pathname);
 		} else if(objectClass.equals("Door")) {
-			object = Door.load(scanner);
+			object = Door.load(scanner, pathname);
 		} else if(objectClass.equals("Food")) {
-			object = Food.load(scanner);
+			object = Food.load(scanner, pathname);
 		} else if(objectClass.equals("Hazard")) {
-			object = Hazard.load(scanner);
+			object = Hazard.load(scanner, pathname);
 		} else if(objectClass.equals("MatrixCell")) {
-			object = MatrixCell.load(scanner);
+			object = MatrixCell.load(scanner, pathname);
 		} else if(objectClass.equals("Plant")) {
-			object = Plant.load(scanner);
+			object = Plant.load(scanner, pathname);
 		} else if(objectClass.equals("Plant_Fruit")) {
-			object = Plant_Fruit.load(scanner);
+			object = Plant_Fruit.load(scanner, pathname);
 		} else if(objectClass.equals("Plant_Tuber")) {
-			object = Plant_Tuber.load(scanner);
+			object = Plant_Tuber.load(scanner, pathname);
 		} else if(objectClass.equals("Tuber")) {
-			object = Tuber.load(scanner);
+			object = Tuber.load(scanner, pathname);
 		} else if(objectClass.equals("Wall")) {
-			object = Wall.load(scanner);
+			object = Wall.load(scanner, pathname);
 		}
 		return object;
 	}
@@ -100,7 +100,7 @@ abstract class WorldObject {
 		ArtificialLife.remove(this);
 	}
 	
-	public abstract void save(PrintWriter pw);
+	public abstract void save(PrintWriter pw, String pathname);
 	
 	public void setLocation(Point p) {
 		setLocation(p.x, p.y);

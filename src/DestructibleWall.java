@@ -8,7 +8,7 @@ class DestructibleWall extends WorldObject implements Stepable {
 	
 	int hp;
 	
-	public static DestructibleWall load(Scanner scanner) {
+	public static DestructibleWall load(Scanner scanner, String pathname) {
 		String data = scanner.next();
 		int hp = Integer.parseInt(data);
 		return new DestructibleWall(hp);
@@ -67,7 +67,7 @@ class DestructibleWall extends WorldObject implements Stepable {
 	}
 	
 	@Override
-	public void save(PrintWriter pw) {
+	public void save(PrintWriter pw, String pathname) {
 		pw.println("DestructibleWall");
 		pw.println(hp);
 	}

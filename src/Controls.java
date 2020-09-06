@@ -19,6 +19,11 @@ class Controls implements KeyListener {
 	///XXX///
 	public static boolean trackPredation = false;
 	
+	private static void releaseModifiers() {
+		ctrlDown = false;
+		shiftDown = false;
+	}
+	
 	public static void setSpeed(int speedSetting) {
 		switch (speedSetting) {
 		case -1:
@@ -105,7 +110,9 @@ class Controls implements KeyListener {
 				break;
 			case LOAD_FILE:
 				ArtificialLife.loadSavedMap();
+				Display.setDisplayMode(true);
 				control.consume();
+				releaseModifiers();
 				break;
 			case PAUSE:
 				setSpeed(isGameRunning ? -1 : 0);
@@ -177,7 +184,7 @@ class Controls implements KeyListener {
 				break;
 			case TOGGLE_MAP_MODE:
 				if(!inPlaceMode)
-					Display.instance.toggleDisplayMode();
+					Display.setDisplayMode(!Display.isMapView());
 				control.consume();
 				break;
 			case TOGGLE_PLACE_MODE:

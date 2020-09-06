@@ -165,65 +165,6 @@ class ArtificialLife implements Runnable {
 		return turnList.getStepList();
 	}
 	
-	@Deprecated
-	public static void loadFile() {
-		int choice = JOptionPane.showOptionDialog(null, "Load one cell or whole population?", "load", JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null, new String[]{"one cell", "population"}, null); 
-		
-		if(choice == 0){
-			// User chose to load one cell. //
-			JFileChooser fileChooser = new JFileChooser();
-			fileChooser.setCurrentDirectory(new File("logs"));
-			fileChooser.showOpenDialog(null);
-			File file = fileChooser.getSelectedFile();
-			loadCellFromFile(file);
-			
-		} else if(choice == 1){
-			// User chose to load a population of cells. //
-			JFileChooser fileChooser = new JFileChooser();
-			fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-			fileChooser.setCurrentDirectory(new File("logs"));
-			fileChooser.showOpenDialog(null);
-			File folder = fileChooser.getSelectedFile();
-			
-			String path = folder.getPath();
-			
-			int i = 0;
-			File file;
-			while(true){
-				file = new File(path+File.separator+"cell"+i+".txt");
-				if(file.canRead()){
-					loadCellFromFile(file);
-					i ++;
-				} else break;
-			} 
-			
-		}
-	}
-	
-	@Deprecated
-	public static void loadCellFromFile(File file){
-		if(file != null){
-			// Load and place the cell. //
-			LinkedList<String> lineList = TextFileHandler.readEntireFile(file.getPath());
-			String cellType = lineList.remove();
-			WorldObject loadedCell = null;
-			if(cellType.startsWith("Cell2 #")) {
-				loadedCell = new MatrixCell(lineList);
-			}
-			if(loadedCell != null) {
-				Point p = loadedCell.getLocation();
-				boolean placedSuccessfully = place(loadedCell, p);
-				while(!placedSuccessfully) {
-					p.x = M.randInt(width-1);
-					p.y = M.randInt(height-1);
-					placedSuccessfully = place(loadedCell, p);
-				}
-			} else {
-				System.out.println("ERROR LOADING CELL FROM FILE: "+file.getPath());
-			}
-		}
-	}
-	
 	private static void loadMap(String mapFilename) {
 		try {
 			loadMap_fromFile(mapFilename);
@@ -308,8 +249,8 @@ class ArtificialLife implements Runnable {
 		fileChooser.setCurrentDirectory(new File("logs"));
 		fileChooser.showOpenDialog(null);
 		File folder = fileChooser.getSelectedFile();
-		String path = folder.getPath();
-		String mapFileName = path+File.separator+"map.dat";
+		String path = folder.getPath()+File.separator;
+		String mapFileName = path+"map.dat";
 		
 		// Load the chosen save. //
 		Scanner scanner = TextFileHandler.startReadingFromFile(mapFileName);
@@ -317,6 +258,7 @@ class ArtificialLife implements Runnable {
 		height = Integer.parseInt(scanner.next().split(":")[1]);
 		grid = new WorldObject[width][height];
 		turnList.clear();
+		Species.load(path);
 		while(scanner.hasNext()) {
 			String line = scanner.next();
 			if(line.startsWith("@")) {
@@ -324,7 +266,7 @@ class ArtificialLife implements Runnable {
 				String[] coords = data[0].split(",");
 				int x = Integer.parseInt(coords[0]);
 				int y = Integer.parseInt(coords[1]);
-				WorldObject object = WorldObject.load(scanner);
+				WorldObject object = WorldObject.loadObject(scanner, path);
 				object.setLocation(x, y);
 				if(object instanceof Stepable) {
 					int stepsFromNow = Integer.parseInt(data[1]);
@@ -412,12 +354,12 @@ class ArtificialLife implements Runnable {
 						objectLocatorString += "#"+stepsToNextTurn;
 					}
 					pw.println(objectLocatorString);
-					object.save(pw);
+					object.save(pw, pathname);
 				}
 			}
 		}
 		pw.close();
-		System.out.println("MAP SAVED TO "+mapFileName);
+		System.out.println("SAVED TO "+pathname);
 	}
 	
 	public static void select(WorldObject selection) {

@@ -13,7 +13,7 @@ class Display extends Frame {
 	static Color bgColor_summer = new Color(126, 126, 126);
 	static Color bgColor_winter = new Color(102, 102, 102);
 	
-	static boolean mapView = true;
+	private static boolean mapView = true;
 	static boolean drawCellVision = false;
 	static int tileSize = 10;
 	static int tileSize_mapView;
@@ -29,6 +29,15 @@ class Display extends Frame {
 	private static long highlightEndDuration = 2000;
 	private static long highlightSwitchTime = 0;
 	private static long highlightSwitchDuration = 150;
+	
+	public static boolean isMapView() {
+		return mapView;
+	}
+	
+	public static void setDisplayMode(boolean mapView) {
+		Display.mapView = mapView;
+		instance.setSize();
+	}
 	
 	private boolean highlight(WorldObject object) {
 		return (speciesHighlighted != null && object instanceof Cell && ((Cell)object).species == speciesHighlighted);
@@ -78,7 +87,7 @@ class Display extends Frame {
 		});
 	}
 	
-	public void draw(){
+	public void draw() {
 		Graphics2D g = (Graphics2D)getBufferStrategy().getDrawGraphics();
 		Insets insets = getInsets();
 		g.translate(insets.left, insets.top);
@@ -159,10 +168,5 @@ class Display extends Frame {
 			createBufferStrategy(2);
 			setSize();
 		}
-	}
-	
-	public void toggleDisplayMode() {
-		mapView = !mapView;
-		setSize();
 	}
 }

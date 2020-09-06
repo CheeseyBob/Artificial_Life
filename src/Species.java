@@ -1,6 +1,9 @@
+import java.io.File;
+import java.io.PrintWriter;
 import java.util.LinkedList;
 import java.util.ListIterator;
 
+import files.TextFileHandler;
 import general.Tuple;
 
 class Species {
@@ -8,11 +11,47 @@ class Species {
 	private static int conceptNeuronMin = 5, conceptNeuronMax = 40;
 	private static int memoryNeuronMin = 0, memoryNeuronMax = 20;
 	
+	// Loading //
+	private static LinkedList<Tuple<String, Species>> loadedSpeciesList = new LinkedList<Tuple<String, Species>>();
+	
 //	private static char[] characterList = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".toCharArray();
 	
+	// Data //
 	private String customName = null;
 	private String code_generationZero, code_mutationSequence;
 	private int conceptNeuronCount, memoryNeuronCount;
+	
+	
+	/**
+	 * Load all the species in a save folder, so that cells can be loaded and assigned their species.
+	 * @param pathnam
+	 */
+	public static void load(String pathname) {
+		loadedSpeciesList.clear();
+		File speciesFolder = new File(pathname+"species"+File.separator);
+		for(String speciesFileName : speciesFolder.list()) {
+			String speciesReference = speciesFileName.substring(speciesFileName.indexOf("#"), speciesFileName.length() - 4);
+			Species species = load(pathname, speciesReference);
+			Tuple<String, Species> referencedSpecies = new Tuple<String, Species>(speciesReference, species);
+			loadedSpeciesList.add(referencedSpecies);
+		}
+	}
+	
+	public static Species load(String pathname, String speciesReference) {
+		String speciesFileName = pathname+"species"+File.separator+"species"+speciesReference+".dat";
+		LinkedList<String> lineList = TextFileHandler.readEntireFile(speciesFileName);
+		return new Species(lineList);
+	}
+	
+	public static Species loadedSpecies(String speciesReference) {
+		for(Tuple<String, Species> referencedSpecies : loadedSpeciesList) {
+			if(referencedSpecies.e1.equals(speciesReference)) {
+				return referencedSpecies.e2;
+			}
+		}
+		System.out.println("COULD NOT FIND LOADED SPECIES: "+speciesReference);
+		return null;
+	}
 	
 	/**
 	 * 
@@ -76,13 +115,28 @@ class Species {
 		code_mutationSequence = "";
 	}
 	
+	private Species(LinkedList<String> dataList) {
+		dataList.remove();
+		customName = dataList.remove();
+		if(customName.equals(""))
+			customName = null;
+		dataList.remove();
+		code_generationZero = dataList.remove();
+		dataList.remove();
+		code_mutationSequence = dataList.remove();
+		dataList.remove();
+		conceptNeuronCount = Integer.parseInt(dataList.remove());
+		dataList.remove();
+		memoryNeuronCount = Integer.parseInt(dataList.remove());
+	}
+	
 	private Species(Species parentSpecies) {
 		conceptNeuronCount = parentSpecies.conceptNeuronCount;
 		memoryNeuronCount = parentSpecies.memoryNeuronCount;
 		code_generationZero = parentSpecies.code_generationZero;
 		code_mutationSequence = parentSpecies.code_mutationSequence;
 		if(parentSpecies.customName != null) {
-			customName = parentSpecies.customName+"+";
+			customName = parentSpecies.customName+"'";
 		}
 	}
 	
@@ -175,6 +229,28 @@ class Species {
 	
 	public void setCustomName(String customName) {
 		this.customName = customName;
+	}
+	
+	public void save(String pathname) {
+		// Get the species reference. //
+		String speciesReference = "#"+Integer.toHexString(hashCode());
+		
+		// Start writing to the species data file. //
+		String speciesFileName = pathname+"species"+File.separator+"species"+speciesReference+".dat";
+		PrintWriter pw = TextFileHandler.startWritingToFile(speciesFileName);
+		pw.println("customName=");
+		pw.println(customName == null ? "" : customName);
+		pw.println("code_generationZero=");
+		pw.println(code_generationZero);
+		pw.println("code_mutationSequence=");
+		pw.println(code_mutationSequence);
+		pw.println("conceptNeuronCount=");
+		pw.println(conceptNeuronCount);
+		pw.println("memoryNeuronCount=");
+		pw.println(memoryNeuronCount);
+		
+		// Done //
+		pw.close();
 	}
 }
 

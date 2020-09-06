@@ -7,7 +7,7 @@ import java.util.Scanner;
 class Tuber extends WorldObject {
 	static Color color = new Color(102, 102, 61);
 	
-	public static Tuber load(Scanner scanner) {
+	public static Tuber load(Scanner scanner, String pathname) {
 		return new Tuber();
 	}
 
@@ -48,7 +48,7 @@ class Tuber extends WorldObject {
 	}
 	
 	@Override
-	public void save(PrintWriter pw) {
+	public void save(PrintWriter pw, String pathname) {
 		pw.println("Tuber");
 	}
 }

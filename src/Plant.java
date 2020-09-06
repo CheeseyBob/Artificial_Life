@@ -10,7 +10,7 @@ class Plant extends WorldObject implements Stepable {
 	boolean fruitsInSummer;
 	int stepsToBearFruit = M.randInt(50, 100);
 	
-	public static Plant load(Scanner scanner) {
+	public static Plant load(Scanner scanner, String pathname) {
 		String[] data = scanner.next().split(":");
 		boolean fruitsInSummer = Boolean.parseBoolean(data[0]);
 		int stepsToBearFruit = Integer.parseInt(data[1]);
@@ -73,7 +73,7 @@ class Plant extends WorldObject implements Stepable {
 	}
 	
 	@Override
-	public void save(PrintWriter pw) {
+	public void save(PrintWriter pw, String pathname) {
 		pw.println("Plant");
 		pw.println(fruitsInSummer+":"+stepsToBearFruit);
 	}

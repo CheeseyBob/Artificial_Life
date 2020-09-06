@@ -23,11 +23,11 @@ m = toggle between map view and follow view.
 s = toggle generation 0 cell spawning (it is recommended to disable this once a self-sustaining population has been achieved).
 f = follow the selected cell.
 v = toggle drawing the selected cell's vision.
-ctrl + s = save the current simulation. #not currently working#
-ctrl + l = load cells from file. #not currently working#
 d = open all doors.
 shift + d = close all doors.
 ctrl + shift + d = forcibly close all doors (removing any objects in the way).
+ctrl + s = save the current simulation.
+ctrl + l = load a saved simulation.
 
 Parameters can be set be editing data/init.txt. In particular, the map can be set to a custom image file.
 

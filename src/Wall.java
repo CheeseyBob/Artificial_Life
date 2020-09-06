@@ -6,7 +6,7 @@ import java.util.Scanner;
 class Wall extends WorldObject {
 	private static Color color = Color.BLACK;
 	
-	public static Wall load(Scanner scanner) {
+	public static Wall load(Scanner scanner, String pathname) {
 		return new Wall();
 	}
 
@@ -39,7 +39,7 @@ class Wall extends WorldObject {
 	}
 	
 	@Override
-	public void save(PrintWriter pw) {
+	public void save(PrintWriter pw, String pathname) {
 		pw.println("Wall");
 	}
 }

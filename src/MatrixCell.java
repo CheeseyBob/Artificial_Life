@@ -2,6 +2,7 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.PrintWriter;
 import java.util.LinkedList;
 import java.util.Scanner;
@@ -22,7 +23,7 @@ class MatrixCell extends Cell {
 	/////////////////////////////////////////////////
 	
 	
-	// Cell Data //
+	// Cell Physical Characteristics //
 	int hue;
 	int energyPassedToChild;
 	
@@ -61,13 +62,11 @@ class MatrixCell extends Cell {
 		return child;
 	}
 	
-	public static MatrixCell load(Scanner scanner) {
-		
-		
-		// TODO ///////////////////////////////
-		
-		
-		return new MatrixCell();
+	public static MatrixCell load(Scanner scanner, String pathname) {
+		String cellReference = scanner.next();
+		String cellFileName = pathname+"cells"+File.separator+"cell"+cellReference+".dat";
+		LinkedList<String> lineList = TextFileHandler.readEntireFile(cellFileName);
+		return new MatrixCell(lineList);
 	}
 	
 	MatrixCell(){
@@ -100,66 +99,82 @@ class MatrixCell extends Cell {
 		energyPassedToChild = M.roll(0.5) ? parent1.energyPassedToChild : parent2.energyPassedToChild;
 	}
 	
-	MatrixCell(LinkedList<String> lineList){
+	private MatrixCell(LinkedList<String> dataList){
 		// Cell metadata //
-		lineList.remove();
-		generation = Integer.parseInt(lineList.remove());
-		lineList.remove();
-		children = Integer.parseInt(lineList.remove());
-		lineList.remove();
-		lifetimeFoodEaten = Integer.parseInt(lineList.remove());
+		dataList.remove();
+		species = Species.loadedSpecies(dataList.remove());
+		dataList.remove();
+		generation = Integer.parseInt(dataList.remove());
+		dataList.remove();
+		children = Integer.parseInt(dataList.remove());
+		dataList.remove();
+		lifetimeFoodEaten = Integer.parseInt(dataList.remove());
+		dataList.remove();
+		lifetimeFoodEatenByPredation = Integer.parseInt(dataList.remove());
 		
-		// Cell data //
-		lineList.remove();
-		hue = Integer.parseInt(lineList.remove());
-		lineList.remove();
-		energyPassedToChild = Integer.parseInt(lineList.remove());
+		// Cell Physical characteristics //
+		dataList.remove();
+		hue = Integer.parseInt(dataList.remove());
+		dataList.remove();
+		energyPassedToChild = Integer.parseInt(dataList.remove());
+		dataList.remove();
+		attackStrength = Integer.parseInt(dataList.remove());
+		dataList.remove();
+		biteSize = Integer.parseInt(dataList.remove());
+		dataList.remove();
+		buildStrength = Integer.parseInt(dataList.remove());
+		dataList.remove();
+		energyStoreSize = Integer.parseInt(dataList.remove());
+		dataList.remove();
+		hpMax = Integer.parseInt(dataList.remove());
+		dataList.remove();
+		hp = Integer.parseInt(dataList.remove());
 		
 		// Cell variables //
-		lineList.remove();
-		int x = Integer.parseInt(lineList.remove());
-		lineList.remove();
-		int y = Integer.parseInt(lineList.remove());
+		dataList.remove();
+		int x = Integer.parseInt(dataList.remove());
+		dataList.remove();
+		int y = Integer.parseInt(dataList.remove());
 		location = new Point(x, y);
-		lineList.remove();
-		facing = Direction.parseDir(lineList.remove());
-		lineList.remove();
-		energy = Integer.parseInt(lineList.remove());
-		lineList.remove();
-		lifetime = Integer.parseInt(lineList.remove());
-		lineList.remove();
-		isDead = Boolean.parseBoolean(lineList.remove());
-		lineList.remove();
-		mate = null;lineList.remove(); // TODO - reassign mates after loading from file.
+		dataList.remove();
+		facing = Direction.parseDir(dataList.remove());
+		dataList.remove();
+		energy = Integer.parseInt(dataList.remove());
+		dataList.remove();
+		lifetime = Integer.parseInt(dataList.remove());
+		dataList.remove();
+		isDead = Boolean.parseBoolean(dataList.remove());
+		dataList.remove();
+		mate = null;dataList.remove(); // TODO - reassign mates after loading from file.
 		
 		// Neuron data //
 		// Strictly, we only need the neuron data values for memory neurons. For the rest, the neuron count is sufficient.
-		lineList.remove();
-		sensoryNeurons = loadVector(lineList.remove());
-		lineList.remove();
-		memoryNeurons = loadVector(lineList.remove());
-		lineList.remove();
-		conceptNeurons = loadVector(lineList.remove());
-		lineList.remove();
-		motorNeurons = loadVector(lineList.remove());
+		dataList.remove();
+		sensoryNeurons = loadVector(dataList.remove());
+		dataList.remove();
+		memoryNeurons = loadVector(dataList.remove());
+		dataList.remove();
+		conceptNeurons = loadVector(dataList.remove());
+		dataList.remove();
+		motorNeurons = loadVector(dataList.remove());
 		
 		// Neuron connections layer 1 //
-		lineList.remove();
-		sensoryConceptConnections = loadMatrix(lineList, conceptNeurons.length);
-		lineList.remove();
-		memoryConceptConnections = loadMatrix(lineList, conceptNeurons.length);
-		lineList.remove();
-		conceptBias = loadVector(lineList.remove());
+		dataList.remove();
+		sensoryConceptConnections = loadMatrix(dataList, conceptNeurons.length);
+		dataList.remove();
+		memoryConceptConnections = loadMatrix(dataList, conceptNeurons.length);
+		dataList.remove();
+		conceptBias = loadVector(dataList.remove());
 		
 		// Neuron connections layer 2 //
-		lineList.remove();
-		conceptMotorConnections = loadMatrix(lineList, motorNeurons.length);
-		lineList.remove();
-		motorBias = loadVector(lineList.remove());
-		lineList.remove();
-		conceptMemoryConnections = loadMatrix(lineList, memoryNeurons.length);
-		lineList.remove();
-		memoryBias = loadVector(lineList.remove());
+		dataList.remove();
+		conceptMotorConnections = loadMatrix(dataList, motorNeurons.length);
+		dataList.remove();
+		motorBias = loadVector(dataList.remove());
+		dataList.remove();
+		conceptMemoryConnections = loadMatrix(dataList, memoryNeurons.length);
+		dataList.remove();
+		memoryBias = loadVector(dataList.remove());
 	}
 	
 	private boolean action_attack() {
@@ -300,7 +315,7 @@ class MatrixCell extends Cell {
 			RayCastResult result = RayCast.castRay(location, eyeDirection, rayCastLength);
 			int distance = result.distanceToObject + 1;
 			Point eyeVector = eyeDirection.getVector();
-			if(Display.mapView) {
+			if(Display.isMapView()) {
 				int tileSize = Display.tileSize_mapView;
 				x1 = tileSize*location.x + tileSize/2;
 				y1 = tileSize*location.y + tileSize/2;
@@ -510,84 +525,98 @@ class MatrixCell extends Cell {
 		conceptMemoryConnections = M.shrinkMatrixRows(conceptMemoryConnections, removedNeuronIndex);
 	}
 	
-	void printToFile(String filename){
-		PrintWriter pw = TextFileHandler.startWritingToFile(filename);
-		pw.println("Cell2 #"+ArtificialLife.getCellIndex(this));
+	@Override
+	public void save(PrintWriter pw, String pathname) {
+		// Print a pointer to the cell data file in the map save data file. //
+		String cellReference = "#"+Integer.toHexString(hashCode());
+		pw.println("MatrixCell");
+		pw.println(cellReference);
+		
+		// Save the cell's species data. //
+		String speciesReference = "#"+Integer.toHexString(species.hashCode());
+		species.save(pathname);
+		
+		// Start writing to the cell data file. //
+		String cellFileName = pathname+"cells"+File.separator+"cell"+cellReference+".dat";
+		PrintWriter cellPW = TextFileHandler.startWritingToFile(cellFileName);
 		
 		// Cell metadata //
-		pw.println("generation=");
-		pw.println(generation);
-		pw.println("children=");
-		pw.println(children);
-		pw.println("lifetimeFoodEaten=");
-		pw.println(lifetimeFoodEaten);
-		
-		// Cell data //
-		pw.println("col=");
-		pw.println(hue);
-		pw.println("energyPassedToChild=");
-		pw.println(energyPassedToChild);
-		
+		cellPW.println("species=");
+		cellPW.println(speciesReference);
+		cellPW.println("generation=");
+		cellPW.println(generation);
+		cellPW.println("children=");
+		cellPW.println(children);
+		cellPW.println("lifetimeFoodEaten=");
+		cellPW.println(lifetimeFoodEaten);
+		cellPW.println("lifetimeFoodEatenByPredation=");
+		cellPW.println(lifetimeFoodEatenByPredation);
+
+		// Cell physical characteristics //
+		cellPW.println("col=");
+		cellPW.println(hue);
+		cellPW.println("energyPassedToChild=");
+		cellPW.println(energyPassedToChild);
+		cellPW.println("attackStrength=");
+		cellPW.println(attackStrength);
+		cellPW.println("biteSize=");
+		cellPW.println(biteSize);
+		cellPW.println("buildStrength=");
+		cellPW.println(buildStrength);
+		cellPW.println("energyStoreSize=");
+		cellPW.println(energyStoreSize);
+		cellPW.println("hpMax=");
+		cellPW.println(hpMax);
+		cellPW.println("hp=");
+		cellPW.println(hp);
+
 		// Cell variables //
-		pw.println("x=");
-		pw.println(location.x);
-		pw.println("y=");
-		pw.println(location.y);
-		pw.println("facing=");
-		pw.println(facing.name());
-		pw.println("energy=");
-		pw.println(energy);
-		pw.println("lifetime=");
-		pw.println(lifetime);
-		pw.println("isDead=");
-		pw.println(isDead);
-		pw.println("mate=");
-		pw.println(ArtificialLife.getCellIndex(mate));
-		
+		cellPW.println("x=");
+		cellPW.println(location.x);
+		cellPW.println("y=");
+		cellPW.println(location.y);
+		cellPW.println("facing=");
+		cellPW.println(facing.name());
+		cellPW.println("energy=");
+		cellPW.println(energy);
+		cellPW.println("lifetime=");
+		cellPW.println(lifetime);
+		cellPW.println("isDead=");
+		cellPW.println(isDead);
+		cellPW.println("mate=");
+		cellPW.println(ArtificialLife.getCellIndex(mate));
+
 		// Neuron data //
-		pw.println("sensoryNeurons=");
-		printVector(pw, sensoryNeurons);
-		pw.println("memoryNeurons=");
-		printVector(pw, memoryNeurons);
-		pw.println("conceptNeurons=");
-		printVector(pw, conceptNeurons);
-		pw.println("motorNeurons=");
-		printVector(pw, motorNeurons);
-		
+		cellPW.println("sensoryNeurons=");
+		printVector(cellPW, sensoryNeurons);
+		cellPW.println("memoryNeurons=");
+		printVector(cellPW, memoryNeurons);
+		cellPW.println("conceptNeurons=");
+		printVector(cellPW, conceptNeurons);
+		cellPW.println("motorNeurons=");
+		printVector(cellPW, motorNeurons);
+
 		// Neuron connections layer 1 //
-		pw.println("sensoryConceptConnections=");
-		printMatrix(pw, sensoryConceptConnections);
-		pw.println("memoryConceptConnections=");
-		printMatrix(pw, memoryConceptConnections);
-		pw.println("conceptBias=");
-		printVector(pw, conceptBias);
-		
+		cellPW.println("sensoryConceptConnections=");
+		printMatrix(cellPW, sensoryConceptConnections);
+		cellPW.println("memoryConceptConnections=");
+		printMatrix(cellPW, memoryConceptConnections);
+		cellPW.println("conceptBias=");
+		printVector(cellPW, conceptBias);
+
 		// Neuron connections layer 2 //
-		pw.println("conceptMotorConnections=");
-		printMatrix(pw, conceptMotorConnections);
-		pw.println("motorBias=");
-		printVector(pw, motorBias);
-		pw.println("conceptMemoryConnections=");
-		printMatrix(pw, conceptMemoryConnections);
-		pw.println("memoryBias=");
-		printVector(pw, memoryBias);
-		
+		cellPW.println("conceptMotorConnections=");
+		printMatrix(cellPW, conceptMotorConnections);
+		cellPW.println("motorBias=");
+		printVector(cellPW, motorBias);
+		cellPW.println("conceptMemoryConnections=");
+		printMatrix(cellPW, conceptMemoryConnections);
+		cellPW.println("memoryBias=");
+		printVector(cellPW, memoryBias);
+
 		// Done //
-		pw.close();
-	}
-	
-	@Override
-	public void save(PrintWriter pw) {
-		pw.println("MatrixCell");
-		pw.println("#"+Integer.toHexString(hashCode()));
-		
-		
-		
-		
-		// TODO - print a separate file for the cell data. //
-		
-		
-		
+		cellPW.println("end"); // This is required so that if the last data string is empty, it isn't trimmed when reading the file.
+		cellPW.close();
 	}
 	
 	private void setMate(MatrixCell cell) {

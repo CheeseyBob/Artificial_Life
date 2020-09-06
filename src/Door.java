@@ -18,7 +18,7 @@ class Door extends WorldObject {
 		}
 	}
 	
-	public static Door load(Scanner scanner) {
+	public static Door load(Scanner scanner, String pathname) {
 		return new Door();
 	}
 	
@@ -81,7 +81,7 @@ class Door extends WorldObject {
 	}
 	
 	@Override
-	public void save(PrintWriter pw) {
+	public void save(PrintWriter pw, String pathname) {
 		pw.println("Door");
 	}
 }
