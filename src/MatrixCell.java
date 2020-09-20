@@ -48,14 +48,14 @@ class MatrixCell extends Cell {
 	double[][] conceptMemoryConnections;
 	double[] memoryBias;
 	
-	private static MatrixCell createChild(MatrixCell parent) {
+	public static MatrixCell createChild(MatrixCell parent) {
 		MatrixCell child = new MatrixCell(parent);
 		child.generation = parent.generation + 1;
 		child.mutate();
 		return child;
 	}
 	
-	private static MatrixCell createChild(MatrixCell parent1, MatrixCell parent2) {
+	public static MatrixCell createChild(MatrixCell parent1, MatrixCell parent2) {
 		MatrixCell child = new MatrixCell(parent1, parent2);
 		child.generation = Math.max(parent1.generation, parent2.generation) + 1;
 		child.mutate();

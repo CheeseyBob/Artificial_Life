@@ -28,6 +28,8 @@ shift + d = close all doors.
 ctrl + shift + d = forcibly close all doors (removing any objects in the way).
 ctrl + s = save the current simulation.
 ctrl + l = load a saved simulation.
+ctrl + i = load a saved species into the cell injector.
+ctrl + shift + i = clear the species from the cell injector.
 
 Parameters can be set be editing data/init.txt. In particular, the map can be set to a custom image file.
 

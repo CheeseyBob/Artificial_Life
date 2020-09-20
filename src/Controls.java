@@ -45,6 +45,7 @@ class Controls implements KeyListener {
 	}
 	
 	public static void setup() {
+		Control.CLEAR_INJECTOR.setTrigger(KeyEvent.VK_I, true, true);
 		Control.DEBUG1.setTrigger(KeyEvent.VK_F1, false, false);
 		Control.DOORS_CLOSE.setTrigger(KeyEvent.VK_D, true, false);
 		Control.DOORS_CLOSE_FORCIBLY.setTrigger(KeyEvent.VK_D, true, true);
@@ -52,6 +53,7 @@ class Controls implements KeyListener {
 		Control.DRAW_CELL_VISION.setTrigger(KeyEvent.VK_V);
 		Control.FOLLOW_CELL.setTrigger(KeyEvent.VK_F);
 		Control.LOAD_FILE.setTrigger(KeyEvent.VK_L, false, true);
+		Control.LOAD_INJECTOR.setTrigger(KeyEvent.VK_I, false, true);
 		Control.PAUSE.setTrigger(KeyEvent.VK_SPACE);
 		Control.PLACEMODE_PLACE_FOOD.setTrigger(KeyEvent.VK_F);
 		Control.PLACEMODE_PLACE_HAZARD.setTrigger(KeyEvent.VK_H);
@@ -84,6 +86,11 @@ class Controls implements KeyListener {
 	public static void step() {
 		for(Control control : Control.getPressedControls()) {
 			switch (control) {
+			case CLEAR_INJECTOR:
+				ArtificialLife.injectionList.clear();
+				ArtificialLife.injectionListOrigin = "";
+				control.consume();
+				break;
 			case DEBUG1:
 				trackPredation = !trackPredation;
 				System.out.println("trackPredation="+trackPredation);
@@ -111,6 +118,11 @@ class Controls implements KeyListener {
 			case LOAD_FILE:
 				ArtificialLife.loadSavedMap();
 				Display.setDisplayMode(true);
+				control.consume();
+				releaseModifiers();
+				break;
+			case LOAD_INJECTOR:
+				ArtificialLife.loadSavedSpecies();
 				control.consume();
 				releaseModifiers();
 				break;
@@ -264,9 +276,10 @@ class Controls implements KeyListener {
 }
 
 enum Control {
+	CLEAR_INJECTOR,
 	DEBUG1,
 	DOORS_CLOSE, DOORS_CLOSE_FORCIBLY, DOORS_OPEN,
-	DRAW_CELL_VISION, FOLLOW_CELL, LOAD_FILE, PAUSE,
+	DRAW_CELL_VISION, FOLLOW_CELL, LOAD_FILE, LOAD_INJECTOR, PAUSE,
 	PLACEMODE_PLACE_FOOD, PLACEMODE_PLACE_HAZARD, PLACEMODE_PLACE_WALL, PLACEMODE_REMOVE_OBJECT,
 	SAVE_FILE,
 	SIM_SPEED_1, SIM_SPEED_2, SIM_SPEED_3, SIM_SPEED_4, SIM_SPEED_5, SIM_SPEED_6, SIM_SPEED_7, SIM_SPEED_8, SIM_SPEED_9,

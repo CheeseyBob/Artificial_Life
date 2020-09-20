@@ -36,6 +36,9 @@ class ArtificialLife implements Runnable {
 	
 	static Cell selectedCell = null;
 	
+	static String injectionListOrigin = "";
+	static LinkedList<MatrixCell> injectionList = new LinkedList<MatrixCell>();
+	
 	// The World //
 	static WorldObject[][] grid = new WorldObject[width][height];
 	static TurnList turnList = new TurnList();
@@ -47,6 +50,16 @@ class ArtificialLife implements Runnable {
 	// Auto-test variables //
 	static boolean isAutotesting = false;
 	static AutotestManager autotestManager = null;
+	
+	private static MatrixCell createCellToSpawn() {
+		if(injectionList.isEmpty()) {
+			return new MatrixCell();
+		} else {
+			MatrixCell parent = M.chooseRandom(injectionList);
+			MatrixCell newCell = MatrixCell.createChild(parent);
+			return newCell;
+		}
+	}
 	
 	public static int getCellCount(){
 		int cellCount = 0;
@@ -246,36 +259,64 @@ class ArtificialLife implements Runnable {
 		// Choose a save folder to load. //
 		JFileChooser fileChooser = new JFileChooser();
 		fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-		fileChooser.setCurrentDirectory(new File("logs"));
+		fileChooser.setCurrentDirectory(new File("saves"));
 		fileChooser.showOpenDialog(null);
 		File folder = fileChooser.getSelectedFile();
-		String path = folder.getPath()+File.separator;
-		String mapFileName = path+"map.dat";
-		
-		// Load the chosen save. //
-		Scanner scanner = TextFileHandler.startReadingFromFile(mapFileName);
-		width = Integer.parseInt(scanner.next().split(":")[1]);
-		height = Integer.parseInt(scanner.next().split(":")[1]);
-		grid = new WorldObject[width][height];
-		turnList.clear();
-		Species.load(path);
-		while(scanner.hasNext()) {
-			String line = scanner.next();
-			if(line.startsWith("@")) {
-				String[] data = line.substring(1).split("#"); // data[0]=coords, data[1]=nextStep
-				String[] coords = data[0].split(",");
-				int x = Integer.parseInt(coords[0]);
-				int y = Integer.parseInt(coords[1]);
-				WorldObject object = WorldObject.loadObject(scanner, path);
-				object.setLocation(x, y);
-				if(object instanceof Stepable) {
-					int stepsFromNow = Integer.parseInt(data[1]);
-					turnList.add((Stepable)object, stepsFromNow);
+		if(folder != null) {
+			String path = folder.getPath()+File.separator;
+			String mapFileName = path+"map.dat";
+			
+			// Load the chosen save. //
+			Scanner scanner = TextFileHandler.startReadingFromFile(mapFileName);
+			width = Integer.parseInt(scanner.next().split(":")[1]);
+			height = Integer.parseInt(scanner.next().split(":")[1]);
+			grid = new WorldObject[width][height];
+			turnList.clear();
+			Species.load(path);
+			while(scanner.hasNext()) {
+				String line = scanner.next();
+				if(line.startsWith("@")) {
+					String[] data = line.substring(1).split("#"); // data[0]=coords, data[1]=nextStep
+					String[] coords = data[0].split(",");
+					int x = Integer.parseInt(coords[0]);
+					int y = Integer.parseInt(coords[1]);
+					WorldObject object = WorldObject.loadObject(scanner, path);
+					object.setLocation(x, y);
+					if(object instanceof Stepable) {
+						int stepsFromNow = Integer.parseInt(data[1]);
+						turnList.add((Stepable)object, stepsFromNow);
+					}
 				}
 			}
+			scanner.close();
+			System.out.println("LOADED MAP");
 		}
-		scanner.close();
-		System.out.println("LOADED MAP");
+	}
+	
+	public static void loadSavedSpecies() {
+		// Choose a save folder to load. //
+		JFileChooser fileChooser = new JFileChooser();
+		fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+		fileChooser.setCurrentDirectory(new File("saves"));
+		fileChooser.showOpenDialog(null);
+		File folder = fileChooser.getSelectedFile();
+		if(folder != null) {
+			String path = folder.getPath()+File.separator;
+			String cellListFileName = path+"cells.dat";
+			
+			// Load the chosen saved species into the injection list. //
+			Scanner scanner = TextFileHandler.startReadingFromFile(cellListFileName);
+			Species.load(path);
+			injectionList.clear();
+			while(scanner.hasNext()) {
+				WorldObject object = WorldObject.loadObject(scanner, path);
+				MatrixCell cell = (MatrixCell)object;
+				injectionList.add(cell);
+			}
+			scanner.close();
+			injectionListOrigin = "Species "+injectionList.getFirst().species.getDisplayName();
+			System.out.println("LOADED SPECIES");
+		}
 	}
 	
 	public static void main(String[] args) {	
@@ -338,15 +379,14 @@ class ArtificialLife implements Runnable {
 	
 	public static void saveMap() {
 		Date date = new Date();
-		String pathname = "logs/save-"+date.getTime()+File.separator;
+		String pathname = "saves/save-"+date.getTime()+File.separator;
 		String mapFileName = pathname+"map.dat";
 		PrintWriter pw = TextFileHandler.startWritingToFile(mapFileName, true);
 		pw.println("width:"+width);
 		pw.println("height:"+height);
-		WorldObject object = null;
 		for(int x = 0; x < width; x ++) {
 			for(int y = 0; y < height; y ++) {
-				object = grid[x][y];
+				WorldObject object = grid[x][y];
 				if(object != null) {
 					String objectLocatorString = "@"+x+","+y;
 					if(object instanceof Stepable) {
@@ -359,7 +399,29 @@ class ArtificialLife implements Runnable {
 			}
 		}
 		pw.close();
-		System.out.println("SAVED TO "+pathname);
+		JOptionPane.showMessageDialog(null, "World saved to:"+"\n"+pathname, "", JOptionPane.INFORMATION_MESSAGE);
+		System.out.println("SAVED WORLD TO "+pathname);
+	}
+	
+	public static void saveSpecies(Species species) {
+		Date date = new Date();
+		String pathname = "saves/species-"+species.getDisplayName()+"-"+date.getTime()+File.separator;
+		String cellListFileName = pathname+"cells.dat";
+		PrintWriter pw = TextFileHandler.startWritingToFile(cellListFileName, true);
+		for(int x = 0; x < width; x ++) {
+			for(int y = 0; y < height; y ++) {
+				WorldObject object = grid[x][y];
+				if(object != null && object instanceof Cell) {
+					Cell cell = (Cell)object;
+					if(cell.species == species) {
+						cell.save(pw, pathname);
+					}
+				}
+			}
+		}
+		pw.close();
+		JOptionPane.showMessageDialog(null, "Species saved to:"+"\n"+pathname, "", JOptionPane.INFORMATION_MESSAGE);
+		System.out.println("SAVED SPECIES TO "+pathname);
 	}
 	
 	public static void select(WorldObject selection) {
@@ -456,7 +518,8 @@ class ArtificialLife implements Runnable {
 		int failedPlaceAttempts = 0;
 		int maxFailedPlaceAttempts = 100;
 		while(cellCount < minCellCount) {
-			boolean placedSuccessfully = placeRandomly(new MatrixCell());
+			Cell newCell = createCellToSpawn();
+			boolean placedSuccessfully = placeRandomly(newCell);
 			if(placedSuccessfully) {
 				cellCount ++;
 			} else {

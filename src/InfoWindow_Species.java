@@ -30,10 +30,11 @@ class InfoWindow_Species extends JFrame implements ActionListener {
 			dataLabel_attackStrength, dataLabel_biteSize, dataLabel_buildStrength, dataLabel_energyCapacity, dataLabel_hp};
 	
 	// Action Buttons //
-	private static String[] actionButtonLabels = {"H", "R"};
+	private static String[] actionButtonLabels = {"H", "R", "S"};
 	private static JButton[] actionButton_highlight = new JButton[speciesListLength];
 	private static JButton[] actionButton_rename = new JButton[speciesListLength];
-	private static JButton[][] actionButtonLists = {actionButton_highlight, actionButton_rename};
+	private static JButton[] actionButton_save = new JButton[speciesListLength];
+	private static JButton[][] actionButtonLists = {actionButton_highlight, actionButton_rename, actionButton_save};
 	
 	private static LinkedList<Species> speciesList = new LinkedList<Species>();
 	
@@ -57,6 +58,17 @@ class InfoWindow_Species extends JFrame implements ActionListener {
 		return M.abbreviate(data[0])+" : "+M.abbreviate(data[1])+" : "+M.abbreviate(data[2]);
 	}
 	
+	private static void renameSpecies(Species species) {
+		String newCustomName = JOptionPane.showInputDialog("Enter a name for this species:");
+		if(newCustomName != null) {
+			if(newCustomName.equals("")) {
+				species.setCustomName(null);
+			} else {
+				species.setCustomName(newCustomName);
+			}
+		}
+	}
+	
 	InfoWindow_Species(){
 		setTitle("Species Info");
 		setSize(512, 512);
@@ -74,14 +86,10 @@ class InfoWindow_Species extends JFrame implements ActionListener {
 					Display.highlightSpecies(speciesList.get(i));
 				}
 				if(e.getSource() == actionButton_rename[i]) {
-					String newCustomName = JOptionPane.showInputDialog("Enter a name for this species:");
-					if(newCustomName != null) {
-						if(newCustomName.equals("")) {
-							speciesList.get(i).setCustomName(null);
-						} else {
-							speciesList.get(i).setCustomName(newCustomName);
-						}
-					}
+					renameSpecies(speciesList.get(i));
+				}
+				if(e.getSource() == actionButton_save[i]) {
+					ArtificialLife.saveSpecies(speciesList.get(i));
 				}
 			}
 		}
@@ -133,6 +141,7 @@ class InfoWindow_Species extends JFrame implements ActionListener {
 				dataLabel_hp[i].setText(getInfo(species, Metrics.hpMetric));
 				actionButton_highlight[i].setEnabled(true);
 				actionButton_rename[i].setEnabled(true);
+				actionButton_save[i].setEnabled(true);
 			} else {
 				dataLabel_speciesName[i].setText("---");
 				dataLabel_cellCount[i].setText("---");
@@ -146,6 +155,7 @@ class InfoWindow_Species extends JFrame implements ActionListener {
 				dataLabel_hp[i].setText("---");
 				actionButton_highlight[i].setEnabled(false);
 				actionButton_rename[i].setEnabled(false);
+				actionButton_save[i].setEnabled(false);
 			}
 		}
 		

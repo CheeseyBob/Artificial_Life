@@ -60,6 +60,7 @@ class InfoWindow extends JFrame {
 		infoText += "Season = "+(ArtificialLife.isSummer ? "Summer" : "Winter")+"<br>";
 		infoText += "Number of cells = "+ArtificialLife.getCellCount()+"<br>";
 		infoText += "spawning = "+(Controls.spawnNewCells ? "ON" : "OFF")+"<br>";
+		infoText += "spawn from = "+(ArtificialLife.injectionList.isEmpty() ? "new cells" : ArtificialLife.injectionListOrigin)+"<br>";
 		int latestGeneration = generationMax();
 		int oldestGeneration = generationMin();
 		infoText += "Latest generation = "+latestGeneration+" with "+generationCellCount(latestGeneration)+" cells."+"<br>";
@@ -69,7 +70,6 @@ class InfoWindow extends JFrame {
 		for(CauseOfDeath causeOfDeath : CauseOfDeath.values()) {
 			infoText += "Total deaths by "+causeOfDeath.name().toLowerCase()+" = "+ArtificialLife.totalDeathsBy[causeOfDeath.ordinal()]+"<br>";
 		}
-		infoText += "Median size = "+(float)ArtificialLife.getCellSizeMedian()+"<br>";
 		infoText += "Median speed = "+(float)ArtificialLife.getCellSpeedMedian()+"<br>";
 		infoText += "</html>";
 		return infoText;
