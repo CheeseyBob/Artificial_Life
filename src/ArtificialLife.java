@@ -23,7 +23,7 @@ class ArtificialLife implements Runnable {
 	
 	private static InfoWindow infoWindow;
 	private static InfoWindow_Species speciesWindow;
-	static NeuralNetworkViewer neuralNetworkViewer;
+	private static NeuralNetworkViewer neuralNetworkViewer;
 	
 	static int fpsCap;
 	static int width, height;
@@ -211,10 +211,10 @@ class ArtificialLife implements Runnable {
 					int plantType = M.randInt(4);
 					switch(plantType) {
 					case 0:
-						place(new Plant(true), x, y);
+						place(new Plant_Seasonal(true), x, y);
 						break;
 					case 1:
-						place(new Plant(false), x, y);
+						place(new Plant_Seasonal(false), x, y);
 						break;
 					case 2:
 						place(new Plant_Fruit(), x, y);
@@ -240,10 +240,12 @@ class ArtificialLife implements Runnable {
 					place(new Wall(), x, y);
 				} else if(rgb == Color.RED.getRGB()){
 					place(new Hazard(), x, y);
+				} else if(rgb == Plant.color.getRGB()){
+					place(new Plant(), x, y);
 				} else if(rgb == Color.GREEN.getRGB()){
-					place(new Plant(true), x, y);
+					place(new Plant_Seasonal(true), x, y);
 				} else if(rgb == Color.YELLOW.getRGB()){
-					place(new Plant(false), x, y);
+					place(new Plant_Seasonal(false), x, y);
 				} else if(rgb == Plant_Fruit.color.getRGB()){
 					place(new Plant_Fruit(), x, y);
 				} else if(rgb == Plant_Tuber.color.getRGB()){
@@ -572,7 +574,6 @@ class ArtificialLife implements Runnable {
 	}
 	
 	private ArtificialLife(){
-//		neuralNetworkViewer = new NeuralNetworkViewer();
 		Display.instance.addKeyListener(Controls.instance);
 		Display.instance.setVisible(true);
 		speciesWindow = new InfoWindow_Species();
@@ -581,6 +582,8 @@ class ArtificialLife implements Runnable {
 		infoWindow = new InfoWindow();
 		infoWindow.addKeyListener(Controls.instance);
 		infoWindow.setVisible(true);
+		neuralNetworkViewer = new NeuralNetworkViewer();
+		neuralNetworkViewer.setVisible(true);
 	}
 	
 	public void run() {
@@ -596,6 +599,7 @@ class ArtificialLife implements Runnable {
 				Display.instance.draw();
 				infoWindow.update();
 				speciesWindow.update();
+				neuralNetworkViewer.update();
 			}
 			if(Controls.isFramerateCapped){
 				try{

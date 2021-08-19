@@ -31,11 +31,13 @@ abstract class WorldObject {
 		} else if(objectClass.equals("MatrixCell")) {
 			object = MatrixCell.load(scanner, pathname);
 		} else if(objectClass.equals("Plant")) {
-			object = Plant.load(scanner, pathname);
+			object = Plant_Seasonal.load(scanner, pathname);
 		} else if(objectClass.equals("Plant_Fruit")) {
 			object = Plant_Fruit.load(scanner, pathname);
 		} else if(objectClass.equals("Plant_Tuber")) {
 			object = Plant_Tuber.load(scanner, pathname);
+		} else if(objectClass.equals("Plant_Seasonal")) {
+			object = Plant_Seasonal.load(scanner, pathname);
 		} else if(objectClass.equals("Tuber")) {
 			object = Tuber.load(scanner, pathname);
 		} else if(objectClass.equals("Wall")) {

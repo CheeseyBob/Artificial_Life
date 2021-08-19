@@ -11,7 +11,8 @@ class Display extends Frame {
 	public static final Display instance = new Display();
 	
 	static Color bgColor_summer = new Color(126, 126, 126);
-	static Color bgColor_winter = new Color(102, 102, 102);
+	static Color bgColor_winter = bgColor_summer;
+//	static Color bgColor_winter = new Color(102, 102, 102);
 	
 	private static boolean mapView = true;
 	static boolean drawCellVision = false;

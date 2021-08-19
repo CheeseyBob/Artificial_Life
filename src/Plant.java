@@ -4,25 +4,21 @@ import java.io.PrintWriter;
 import java.util.Scanner;
 
 class Plant extends WorldObject implements Stepable {
-	static Color fruitingCol = new Color(0, 153, 0);
-	static Color idleCol = new Color(102, 255, 102);
+	static Color color = new Color(0, 200, 0);
 	
-	boolean fruitsInSummer;
 	int stepsToBearFruit = M.randInt(50, 100);
 	
 	public static Plant load(Scanner scanner, String pathname) {
 		String[] data = scanner.next().split(":");
-		boolean fruitsInSummer = Boolean.parseBoolean(data[0]);
 		int stepsToBearFruit = Integer.parseInt(data[1]);
-		return new Plant(fruitsInSummer, stepsToBearFruit);
+		return new Plant(stepsToBearFruit);
 	}
 	
-	Plant(boolean fruitsInSummer){
-		this.fruitsInSummer = fruitsInSummer;
+	Plant(){
+		
 	}
 	
-	private Plant(boolean fruitsInSummer, int stepsToBearFruit){
-		this.fruitsInSummer = fruitsInSummer;
+	private Plant(int stepsToBearFruit){
 		this.stepsToBearFruit = stepsToBearFruit;
 	}
 	
@@ -34,9 +30,9 @@ class Plant extends WorldObject implements Stepable {
 	
 	@Override
 	public Color getColor() {
-		return isFruiting() ? fruitingCol : idleCol;
+		return color;
 	}
-
+	
 	@Override
 	public String getDisplayName() {
 		return "Plant";
@@ -50,7 +46,6 @@ class Plant extends WorldObject implements Stepable {
 	@Override
 	public String getInfo() {
 		String info = "";
-		info += "Produces in: "+(fruitsInSummer ? "summer" : "winter")+"<br>";
 		info += "Produces every: "+stepsToBearFruit+" steps"+"<br>";
 		return info;
 	}
@@ -68,20 +63,14 @@ class Plant extends WorldObject implements Stepable {
 		}
 	}
 	
-	private boolean isFruiting() {
-		return (ArtificialLife.isSummer && fruitsInSummer) || (!ArtificialLife.isSummer && !fruitsInSummer);
-	}
-	
 	@Override
 	public void save(PrintWriter pw, String pathname) {
 		pw.println("Plant");
-		pw.println(fruitsInSummer+":"+stepsToBearFruit);
+		pw.println(stepsToBearFruit);
 	}
 	
 	@Override
 	public void step(){
-		if(isFruiting()) {
-			produceFruit();
-		}
+		produceFruit();
 	}
 }
